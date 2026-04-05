@@ -3,13 +3,18 @@ import "./bootstrap";
 import Alpine from "alpinejs";
 import { createApp } from "vue";
 import ComingSoon from "./ComingSoon.vue";
+import Home from "./Home.vue";
 
 window.Alpine = Alpine;
 
 Alpine.start();
 
-const root = document.getElementById("app");
+const homeRoot = document.getElementById("home-app");
+if (homeRoot) {
+    createApp(Home).mount(homeRoot);
+}
 
-if (root) {
-    createApp(ComingSoon).mount(root);
+const comingSoonRoot = document.getElementById("app");
+if (comingSoonRoot) {
+    createApp(ComingSoon).mount(comingSoonRoot);
 }
