@@ -26,6 +26,8 @@ export default {
                     "Cormorant Garamond",
                     ...defaultTheme.fontFamily.serif,
                 ],
+                alata: ["Alata", ...defaultTheme.fontFamily.sans],
+                montecarlo: ["MonteCarlo", ...defaultTheme.fontFamily.serif],
             },
         },
     },

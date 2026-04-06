@@ -264,6 +264,10 @@ const activeServicesTab = computed(
     () => servicesTabs.find((t) => t.id === activeServicesTabId.value) || null,
 );
 
+const showSetlistsButton = computed(() =>
+    ["private-parties", "dj-services"].includes(activeServicesTabId.value),
+);
+
 const activeServicesItem = computed(() => {
     const tab = activeServicesTab.value;
     if (!tab) return null;
@@ -283,14 +287,6 @@ function selectServicesItem(itemId) {
     activeServicesItemId.value = itemId;
 }
 
-const contactServiceOptions = computed(() => {
-    const fromSite = servicesTabs
-        .map((t) => String(t?.label || "").trim())
-        .filter(Boolean);
-    const unique = Array.from(new Set(fromSite));
-    return ["General Enquiry", ...unique, "Other"];
-});
-
 const contactForm = ref({
     name: "",
     email: "",
@@ -298,6 +294,87 @@ const contactForm = ref({
     service: "",
     message: "",
 });
+
+function normalizeServiceLabel(value) {
+    return String(value || "")
+        .trim()
+        .replace(/\s+/g, " ");
+}
+
+function humanizePackageName(value) {
+    return normalizeServiceLabel(value).replace(/-/g, " ");
+}
+
+function serviceLabelFor(tab, item) {
+    const tabId = String(tab?.id || "");
+    const tabLabel = normalizeServiceLabel(tab?.label || "");
+    const itemLabel = normalizeServiceLabel(item?.label || "");
+    const itemTitle = normalizeServiceLabel(item?.title || "");
+
+    if (tabId === "weddings") {
+        const pkg = humanizePackageName(itemLabel || itemTitle || tabLabel);
+        return pkg ? `Wedding - ${pkg} Package` : "Wedding";
+    }
+
+    if (tabId === "wedding-song-writing") {
+        return "Wedding - Song Writing";
+    }
+
+    if (tabId === "private-parties") {
+        return "Private Parties";
+    }
+
+    if (tabId === "dj-services") {
+        const base = tabLabel || "DJ Services";
+        const detail = (itemTitle || itemLabel)
+            .replace(/\s*\(Coming Soon\)\s*/i, "")
+            .trim();
+        return detail && detail !== base ? `${base} - ${detail}` : base;
+    }
+
+    if (tabLabel && itemLabel && itemLabel !== tabLabel) {
+        return `${tabLabel} - ${itemLabel}`;
+    }
+
+    return tabLabel || itemLabel || "";
+}
+
+const contactServiceOptions = computed(() => {
+    const options = [];
+
+    for (const tab of servicesTabs) {
+        for (const item of tab?.items || []) {
+            const label = serviceLabelFor(tab, item);
+            if (label) options.push(label);
+        }
+    }
+
+    if (contactForm.value.service) {
+        options.push(String(contactForm.value.service));
+    }
+
+    const unique = Array.from(
+        new Set(options.map((o) => normalizeServiceLabel(o))),
+    ).filter(Boolean);
+
+    return ["General Enquiry", ...unique, "Other"];
+});
+
+function bookNowFromServices() {
+    const targetAnchor = activeServicesItem?.value?.buttonAnchor || "contact";
+
+    if (targetAnchor === "contact") {
+        const label = serviceLabelFor(
+            activeServicesTab.value,
+            activeServicesItem.value,
+        );
+        if (label) {
+            contactForm.value.service = label;
+        }
+    }
+
+    scrollToAnchor(targetAnchor);
+}
 
 function submitContactForm() {
     // Intentionally UI-only for now; we'll wire submission later.
@@ -329,6 +406,12 @@ function openSetlists() {
 function closeSetlists() {
     isSetlistsOpen.value = false;
 }
+
+watch(activeServicesTabId, () => {
+    if (!showSetlistsButton.value) {
+        closeSetlists();
+    }
+});
 
 function prevSetlist() {
     if (!setlists.length) return;
@@ -656,7 +739,7 @@ onBeforeUnmount(() => {
             />
 
             <div
-                class="relative mx-auto w-full max-w-[1700px] px-10 py-6 min-[641px]:px-16 md:px-32"
+                class="relative mx-auto w-full max-w-[1700px] px-4 py-6 sm:px-6 min-[641px]:px-16 md:px-32"
             >
                 <!-- Desktop nav -->
                 <nav
@@ -806,7 +889,7 @@ onBeforeUnmount(() => {
 
         <main
             ref="scrollEl"
-            class="h-screen snap-y snap-mandatory overflow-y-auto scroll-smooth"
+            class="h-screen snap-y snap-mandatory overflow-y-auto overflow-x-hidden scroll-smooth"
         >
             <!-- Video modal -->
             <div
@@ -869,7 +952,7 @@ onBeforeUnmount(() => {
                 v-for="s in sections"
                 :key="s.id || s.anchor"
                 :id="s.anchor"
-                class="h-screen snap-start"
+                class="min-h-screen snap-start"
             >
                 <!-- Hero section uses a full-height column so bottom row sits at the bottom -->
                 <div
@@ -881,16 +964,25 @@ onBeforeUnmount(() => {
                     >
                         <div class="mx-auto w-full max-w-6xl">
                             <div class="mx-auto max-w-3xl text-center">
-                                <h2
-                                    class="font-sans text-[2.25rem] leading-tight text-lightGreenTint text-shadow-hero min-[641px]:text-[2.75rem] lg:text-[3rem]"
-                                >
-                                    {{ s.heading }}
-                                </h2>
-                                <div
-                                    v-if="s.body"
-                                    class="mt-6 max-w-none font-sans text-[2.75rem] leading-tight text-lightGreenTint text-shadow-hero min-[641px]:text-[3.25rem] lg:text-[4rem]"
-                                    v-html="s.body"
-                                />
+                                <div class="text-shadow-hero">
+                                    <div
+                                        class="font-alata text-[36px] uppercase leading-tight text-lightGreenTint min-[641px]:text-[48px]"
+                                    >
+                                        YOUR STORY, YOUR DAY;
+                                    </div>
+
+                                    <div
+                                        class="mt-3 font-alata text-[44px] uppercase leading-tight text-lightGreenTint min-[641px]:text-[64px]"
+                                    >
+                                        YOUR SONGS
+                                    </div>
+
+                                    <div
+                                        class="mt-2 font-montecarlo text-[72px] leading-none text-deepPurple text-shadow-soft-lavender min-[641px]:text-[128px]"
+                                    >
+                                        Your Way
+                                    </div>
+                                </div>
 
                                 <div
                                     class="mt-64 flex w-full -translate-y-32 flex-col items-stretch justify-center gap-4 uppercase min-[641px]:flex-row min-[641px]:items-center min-[641px]:gap-16 lg:gap-32"
@@ -920,7 +1012,7 @@ onBeforeUnmount(() => {
                     </div>
 
                     <div
-                        class="mx-auto w-full max-w-[1700px] pb-8 px-10 min-[641px]:px-16 md:px-32"
+                        class="mx-auto w-full max-w-[1700px] pb-8 px-4 sm:px-6 min-[641px]:px-16 md:px-32"
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex h-[140px] items-center">
@@ -1315,12 +1407,9 @@ onBeforeUnmount(() => {
                                                 >
                                                     <a
                                                         href="#contact"
-                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-[12px] bg-mutedLilac px-6 py-3 font-sans text-[0.95rem] uppercase leading-none text-softLavender shadow-soft-lavender transition-all duration-500 ease-out hover:bg-deepPurple"
+                                                        class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] bg-mutedLilac px-6 py-3 font-sans text-[0.95rem] uppercase leading-none text-softLavender shadow-soft-lavender transition-all duration-500 ease-out hover:bg-deepPurple min-[641px]:w-auto"
                                                         @click.prevent="
-                                                            scrollToAnchor(
-                                                                activeServicesItem?.buttonAnchor ||
-                                                                    'contact',
-                                                            )
+                                                            bookNowFromServices
                                                         "
                                                     >
                                                         {{
@@ -1331,8 +1420,11 @@ onBeforeUnmount(() => {
 
                                                     <button
                                                         type="button"
-                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-[12px] bg-deepPurple/10 px-6 py-3 font-sans text-[0.95rem] uppercase leading-none text-deepPurple shadow-soft-lavender transition-colors hover:bg-deepPurple/15"
+                                                        class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] bg-deepPurple/10 px-6 py-3 font-sans text-[0.95rem] uppercase leading-none text-deepPurple shadow-soft-lavender transition-colors hover:bg-deepPurple/15 min-[641px]:w-auto"
                                                         @click="openSetlists"
+                                                        v-if="
+                                                            showSetlistsButton
+                                                        "
                                                     >
                                                         View Setlists
                                                     </button>
@@ -1473,7 +1565,7 @@ onBeforeUnmount(() => {
                                 <!-- Left: image + (future) reviews slider -->
                                 <div class="flex flex-col gap-6">
                                     <div
-                                        class="-ml-6 -mt-6 overflow-hidden rounded-[18px] bg-white/15 backdrop-blur-3xl sm:-ml-8 sm:-mt-8"
+                                        class="ml-0 mt-0 overflow-hidden rounded-[18px] bg-white/15 backdrop-blur-3xl sm:-ml-8 sm:-mt-8"
                                     >
                                         <img
                                             :src="CONTACT_IMG_URL"
@@ -1727,10 +1819,74 @@ onBeforeUnmount(() => {
                                             <div class="mt-6">
                                                 <button
                                                     type="submit"
-                                                    class="inline-flex items-center justify-center whitespace-nowrap rounded-[12px] bg-mutedLilac px-10 py-3 font-sans text-[0.95rem] uppercase leading-none text-softLavender shadow-soft-lavender transition-all duration-500 ease-out hover:bg-deepPurple"
+                                                    class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] bg-mutedLilac px-10 py-3 font-sans text-[0.95rem] uppercase leading-none text-softLavender shadow-soft-lavender transition-all duration-500 ease-out hover:bg-deepPurple min-[641px]:w-auto"
                                                 >
                                                     Send
                                                 </button>
+
+                                                <div
+                                                    class="mt-6 flex flex-col items-center gap-5"
+                                                >
+                                                    <a
+                                                        href="https://encoremusicians.com/hire/singers?utm_source=badge&utm_medium=web&utm_campaign=verified_badge&utm_content=light-medium"
+                                                        target="_parent"
+                                                        rel="noopener noreferrer"
+                                                        aria-label="Book Ana Fae on Encore Musicians"
+                                                    >
+                                                        <img
+                                                            src="https://encoremusicians.com/img/embeds/badge-light.svg"
+                                                            alt="Book Ana Fae on Encore Musicians"
+                                                            class="h-[100px] w-[100px]"
+                                                        />
+                                                    </a>
+
+                                                    <div
+                                                        class="flex items-center gap-5"
+                                                    >
+                                                        <a
+                                                            v-for="link in socialLinks"
+                                                            :key="`contact:${link.type}:${link.url}`"
+                                                            :href="link.url"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-deepPurple text-softLavender shadow-soft-lavender transition-all duration-700 ease-out hover:bg-softLavender hover:text-deepPurple hover:shadow-deep-purple"
+                                                            :aria-label="
+                                                                link.label ||
+                                                                link.type
+                                                            "
+                                                        >
+                                                            <svg
+                                                                width="22"
+                                                                height="22"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                aria-hidden="true"
+                                                            >
+                                                                <path
+                                                                    v-for="(
+                                                                        p, idx
+                                                                    ) in getSocialIconPath(
+                                                                        link.type,
+                                                                    )"
+                                                                    :key="idx"
+                                                                    :d="p.d"
+                                                                    :fill="
+                                                                        p.fill ||
+                                                                        'none'
+                                                                    "
+                                                                    :stroke="
+                                                                        p.stroke ||
+                                                                        'currentColor'
+                                                                    "
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                />
+                                                            </svg>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
@@ -1745,13 +1901,13 @@ onBeforeUnmount(() => {
                     <div class="mx-auto w-full max-w-6xl px-6 py-24">
                         <div class="mx-auto max-w-3xl text-center">
                             <h2
-                                class="font-sans text-[3rem] leading-tight text-lightGreenTint text-shadow-hero"
+                                class="break-words font-sans text-[2.25rem] leading-tight text-lightGreenTint text-shadow-hero sm:text-[3rem]"
                             >
                                 {{ s.heading }}
                             </h2>
                             <div
                                 v-if="s.body"
-                                class="mt-6 max-w-none font-sans text-[4rem] leading-tight text-lightGreenTint text-shadow-hero"
+                                class="mt-6 max-w-none break-words font-sans text-[2.75rem] leading-tight text-lightGreenTint text-shadow-hero sm:text-[4rem]"
                                 v-html="s.body"
                             />
 
