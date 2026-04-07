@@ -1827,18 +1827,36 @@ onBeforeUnmount(() => {
                                                 <div
                                                     class="mt-6 flex flex-col items-center gap-5"
                                                 >
-                                                    <a
-                                                        href="https://encoremusicians.com/hire/singers?utm_source=badge&utm_medium=web&utm_campaign=verified_badge&utm_content=light-medium"
-                                                        target="_parent"
-                                                        rel="noopener noreferrer"
-                                                        aria-label="Book Ana Fae on Encore Musicians"
+                                                    <div
+                                                        class="flex flex-wrap items-center justify-center gap-5"
                                                     >
-                                                        <img
-                                                            src="https://encoremusicians.com/img/embeds/badge-light.svg"
-                                                            alt="Book Ana Fae on Encore Musicians"
-                                                            class="h-[100px] w-[100px]"
-                                                        />
-                                                    </a>
+                                                        <a
+                                                            href="https://encoremusicians.com/hire/singers?utm_source=badge&utm_medium=web&utm_campaign=verified_badge&utm_content=light-medium"
+                                                            target="_parent"
+                                                            rel="noopener noreferrer"
+                                                            aria-label="Book Ana Fae on Encore Musicians"
+                                                        >
+                                                            <img
+                                                                src="https://encoremusicians.com/img/embeds/badge-light.svg"
+                                                                alt="Book Ana Fae on Encore Musicians"
+                                                                class="h-[150px] w-[150px]"
+                                                            />
+                                                        </a>
+
+                                                        <a
+                                                            href="https://www.lastminutemusicians.com/members/anafae.html"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            aria-label="Ana Fae on Last Minute Musicians"
+                                                            class="inline-flex h-[150px] w-[150px] items-center justify-center"
+                                                        >
+                                                            <img
+                                                                src="https://www.lastminutemusicians.com/images/v5/LMM-White.png"
+                                                                alt="Ana Fae on Last Minute Musicians"
+                                                                class="h-[150px] w-[150px] object-contain"
+                                                            />
+                                                        </a>
+                                                    </div>
 
                                                     <div
                                                         class="flex items-center gap-5"

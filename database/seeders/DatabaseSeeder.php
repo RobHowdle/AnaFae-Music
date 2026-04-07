@@ -18,16 +18,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ],
-        );
+        if (app()->environment('local')) {
+            User::query()->firstOrCreate(
+                ['email' => 'test@example.com'],
+                [
+                    'name' => 'Test User',
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
+                ],
+            );
+        }
 
-        $home = Page::query()->firstOrCreate(
+        $home = Page::query()->updateOrCreate(
             ['slug' => 'home'],
             ['title' => 'Home', 'is_published' => true],
         );
@@ -80,16 +82,10 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($sections as $section) {
-            PageSection::query()->updateOrCreate(
+            PageSection::query()->firstOrCreate(
                 ['page_id' => $home->id, 'anchor' => $section['anchor']],
                 $section,
             );
         }
-
-        $desiredAnchors = collect($sections)->pluck('anchor')->all();
-        PageSection::query()
-            ->where('page_id', $home->id)
-            ->whereNotIn('anchor', $desiredAnchors)
-            ->delete();
     }
 }

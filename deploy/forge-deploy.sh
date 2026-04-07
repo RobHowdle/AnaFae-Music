@@ -6,12 +6,20 @@ set -euo pipefail
 
 echo "Deploy started: $(date)"
 
+php artisan optimize:clear || true
+
 php artisan view:clear || true
 php artisan down --render=errors.503 || true
 
 composer install --no-interaction --prefer-dist --optimize-autoloader
 
+# If using SQLite, the DB file is not committed (gitignored). Ensure it exists.
+mkdir -p database
+touch database/database.sqlite
+
 php artisan migrate --force
+
+php artisan db:seed --force
 
 npm ci
 npm run build
