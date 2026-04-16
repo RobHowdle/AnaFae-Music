@@ -1,33 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Intended for Laravel Forge deploy script usage.
-# Forge typically runs deployments from the site directory already.
+# Intended for Laravel Forge atomic deployment usage.
 
 echo "Deploy started: $(date)"
 
-php artisan optimize:clear || true
+$CREATE_RELEASE()
 
-php artisan view:clear || true
-php artisan down --render=errors.503 || true
+cd "$FORGE_RELEASE_DIRECTORY"
 
-composer install --no-interaction --prefer-dist --optimize-autoloader
+$FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # If using SQLite, the DB file is not committed (gitignored). Ensure it exists.
 mkdir -p database
 touch database/database.sqlite
 
-php artisan migrate --force
+$FORGE_PHP artisan optimize:clear
+$FORGE_PHP artisan storage:link || true
+$FORGE_PHP artisan migrate --force
+$FORGE_PHP artisan db:seed --class=HomePageDefaultsSeeder --force
 
-php artisan db:seed --force
-
-npm ci
+npm ci || npm install
 npm run build
 
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+$FORGE_PHP artisan optimize
 
-php artisan up
+$ACTIVATE_RELEASE()
+
+$RESTART_QUEUES()
 
 echo "Deploy finished: $(date)"
