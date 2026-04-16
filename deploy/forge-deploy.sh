@@ -15,7 +15,6 @@ $FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autol
 mkdir -p database
 touch database/database.sqlite
 
-$FORGE_PHP artisan optimize:clear
 $FORGE_PHP artisan storage:link || true
 $FORGE_PHP artisan migrate --force
 $FORGE_PHP artisan db:seed --class=HomePageDefaultsSeeder --force
