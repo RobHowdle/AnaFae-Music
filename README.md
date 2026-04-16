@@ -18,6 +18,13 @@ This is the Laravel + Vue 3 website for Ana Fae Music.
     - Backend: `php artisan serve`
     - Frontend: `npm run dev`
 
+### Contact form email
+
+- The homepage contact form posts to `/api/contact` and sends an email via Laravel Mail.
+- Set `CONTACT_FORM_TO_ADDRESS` to the inbox that should receive enquiries.
+- Optional: set `CONTACT_FORM_TO_NAME` for the recipient display name.
+- Configure your mail transport with the usual `MAIL_*` variables. The default `MAIL_MAILER=log` only writes submissions to the Laravel log.
+
 ### Coming soon / maintenance
 
 - The public homepage (`/`) renders the Coming Soon page: [routes/web.php](routes/web.php)

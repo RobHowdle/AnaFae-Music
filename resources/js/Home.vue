@@ -35,18 +35,65 @@ const CONTACT_BG_URL = "/images/contact_bg.jpg";
 const ABOUT_IMG_URL = "/images/about_img.jpeg";
 const CONTACT_IMG_URL = "/images/contact-img.jpeg";
 
-const setlists = [
+const setlistTitleOverrides = {
+    picknmix: "Pick 'n' Mix",
+    "80splayist": "80s Playlist",
+};
+
+const setlistImageModules = import.meta.glob(
+    "../../public/images/setlists/*.{png,jpg,jpeg,webp,avif}",
     {
-        id: "picknmix",
-        title: "Pick ‘n’ Mix",
-        imageUrl: "/images/setlists/picknmix.png",
+        eager: true,
+        import: "default",
+        query: "?url",
     },
-    {
-        id: "80splaylist",
-        title: "80s Playlist",
-        imageUrl: "/images/setlists/80splayist.jpeg",
-    },
-];
+);
+
+function stripKnownExtensions(value) {
+    let normalized = String(value || "");
+    const extensionPattern = /\.(png|jpe?g|webp|avif)$/i;
+
+    while (extensionPattern.test(normalized)) {
+        normalized = normalized.replace(extensionPattern, "");
+    }
+
+    return normalized;
+}
+
+function formatSetlistTitle(fileName) {
+    const baseName = stripKnownExtensions(fileName);
+    const override = setlistTitleOverrides[baseName];
+    if (override) return override;
+
+    return baseName
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\b([a-z])/g, (match) => match.toUpperCase());
+}
+
+function slugifySetlistId(fileName) {
+    return stripKnownExtensions(fileName)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
+const setlists = Object.entries(setlistImageModules)
+    .map(([filePath, imageUrl]) => {
+        const fileName = filePath.split("/").pop() || "";
+        const baseName = stripKnownExtensions(fileName);
+
+        return {
+            id: slugifySetlistId(fileName) || baseName,
+            title: formatSetlistTitle(fileName),
+            imageUrl:
+                typeof imageUrl === "string" ? imageUrl : String(imageUrl),
+        };
+    })
+    .sort((a, b) =>
+        a.title.localeCompare(b.title, undefined, { numeric: true }),
+    );
 
 const LMM_PROFILE_URL =
     "https://www.lastminutemusicians.com/members/anafae.html";
@@ -295,6 +342,18 @@ const contactForm = ref({
     message: "",
 });
 
+const contactFormInitialState = () => ({
+    name: "",
+    email: "",
+    contactNumber: "",
+    service: "",
+    message: "",
+});
+
+const isSubmittingContactForm = ref(false);
+const contactFormErrors = ref({});
+const contactFormStatus = ref({ type: "", message: "" });
+
 function normalizeServiceLabel(value) {
     return String(value || "")
         .trim()
@@ -376,8 +435,40 @@ function bookNowFromServices() {
     scrollToAnchor(targetAnchor);
 }
 
-function submitContactForm() {
-    // Intentionally UI-only for now; we'll wire submission later.
+async function submitContactForm() {
+    if (isSubmittingContactForm.value) return;
+
+    isSubmittingContactForm.value = true;
+    contactFormErrors.value = {};
+    contactFormStatus.value = { type: "", message: "" };
+
+    try {
+        const { data } = await window.axios.post("/api/contact", {
+            ...contactForm.value,
+        });
+
+        contactForm.value = contactFormInitialState();
+        contactFormStatus.value = {
+            type: "success",
+            message: data?.message || "Thanks, your message has been sent.",
+        };
+    } catch (error) {
+        if (error?.response?.status === 422) {
+            contactFormErrors.value = error.response.data?.errors || {};
+            contactFormStatus.value = {
+                type: "error",
+                message: "Please check the highlighted fields and try again.",
+            };
+        } else {
+            contactFormStatus.value = {
+                type: "error",
+                message:
+                    "Something went wrong sending your message. Please try again.",
+            };
+        }
+    } finally {
+        isSubmittingContactForm.value = false;
+    }
 }
 
 const lmmReviews = ref([]);
@@ -1728,6 +1819,19 @@ onBeforeUnmount(() => {
                                             @submit.prevent="submitContactForm"
                                         >
                                             <div
+                                                v-if="contactFormStatus.message"
+                                                class="mb-4 rounded-[10px] px-4 py-3 font-sans text-[13px]"
+                                                :class="
+                                                    contactFormStatus.type ===
+                                                    'success'
+                                                        ? 'bg-green-100 text-green-900'
+                                                        : 'bg-red-100 text-red-900'
+                                                "
+                                            >
+                                                {{ contactFormStatus.message }}
+                                            </div>
+
+                                            <div
                                                 class="grid gap-4 sm:grid-cols-2"
                                             >
                                                 <label
@@ -1742,7 +1846,26 @@ onBeforeUnmount(() => {
                                                     autocomplete="name"
                                                     placeholder="Name"
                                                     class="w-full rounded-[10px] border border-deepPurple/70 bg-softLavender px-4 py-3 font-sans text-[14px] text-deepPurple placeholder:text-deepPurple/60 focus:outline-none focus:ring-2 focus:ring-deepPurple/40"
+                                                    :aria-invalid="
+                                                        Boolean(
+                                                            contactFormErrors
+                                                                .name?.length,
+                                                        )
+                                                    "
                                                 />
+
+                                                <p
+                                                    v-if="
+                                                        contactFormErrors.name
+                                                            ?.length
+                                                    "
+                                                    class="sm:col-span-2 -mt-2 font-sans text-[12px] text-red-700"
+                                                >
+                                                    {{
+                                                        contactFormErrors
+                                                            .name[0]
+                                                    }}
+                                                </p>
 
                                                 <label
                                                     class="sr-only"
@@ -1756,7 +1879,26 @@ onBeforeUnmount(() => {
                                                     autocomplete="email"
                                                     placeholder="Email"
                                                     class="w-full rounded-[10px] border border-deepPurple/70 bg-softLavender px-4 py-3 font-sans text-[14px] text-deepPurple placeholder:text-deepPurple/60 focus:outline-none focus:ring-2 focus:ring-deepPurple/40"
+                                                    :aria-invalid="
+                                                        Boolean(
+                                                            contactFormErrors
+                                                                .email?.length,
+                                                        )
+                                                    "
                                                 />
+
+                                                <p
+                                                    v-if="
+                                                        contactFormErrors.email
+                                                            ?.length
+                                                    "
+                                                    class="sm:col-span-2 -mt-2 font-sans text-[12px] text-red-700"
+                                                >
+                                                    {{
+                                                        contactFormErrors
+                                                            .email[0]
+                                                    }}
+                                                </p>
 
                                                 <label
                                                     class="sr-only"
@@ -1772,7 +1914,28 @@ onBeforeUnmount(() => {
                                                     autocomplete="tel"
                                                     placeholder="Contact Number"
                                                     class="w-full rounded-[10px] border border-deepPurple/70 bg-softLavender px-4 py-3 font-sans text-[14px] text-deepPurple placeholder:text-deepPurple/60 focus:outline-none focus:ring-2 focus:ring-deepPurple/40"
+                                                    :aria-invalid="
+                                                        Boolean(
+                                                            contactFormErrors
+                                                                .contactNumber
+                                                                ?.length,
+                                                        )
+                                                    "
                                                 />
+
+                                                <p
+                                                    v-if="
+                                                        contactFormErrors
+                                                            .contactNumber
+                                                            ?.length
+                                                    "
+                                                    class="sm:col-span-2 -mt-2 font-sans text-[12px] text-red-700"
+                                                >
+                                                    {{
+                                                        contactFormErrors
+                                                            .contactNumber[0]
+                                                    }}
+                                                </p>
 
                                                 <label
                                                     class="sr-only"
@@ -1785,6 +1948,13 @@ onBeforeUnmount(() => {
                                                         contactForm.service
                                                     "
                                                     class="w-full rounded-[10px] border border-deepPurple/70 bg-softLavender px-4 py-3 font-sans text-[14px] text-deepPurple focus:outline-none focus:ring-2 focus:ring-deepPurple/40"
+                                                    :aria-invalid="
+                                                        Boolean(
+                                                            contactFormErrors
+                                                                .service
+                                                                ?.length,
+                                                        )
+                                                    "
                                                 >
                                                     <option value="" disabled>
                                                         Service
@@ -1797,6 +1967,19 @@ onBeforeUnmount(() => {
                                                         {{ opt }}
                                                     </option>
                                                 </select>
+
+                                                <p
+                                                    v-if="
+                                                        contactFormErrors
+                                                            .service?.length
+                                                    "
+                                                    class="sm:col-span-2 -mt-2 font-sans text-[12px] text-red-700"
+                                                >
+                                                    {{
+                                                        contactFormErrors
+                                                            .service[0]
+                                                    }}
+                                                </p>
                                             </div>
 
                                             <div class="mt-4">
@@ -1813,15 +1996,42 @@ onBeforeUnmount(() => {
                                                     rows="6"
                                                     placeholder="Message"
                                                     class="w-full resize-none rounded-[10px] border border-deepPurple/70 bg-softLavender px-4 py-3 font-sans text-[14px] text-deepPurple placeholder:text-deepPurple/60 focus:outline-none focus:ring-2 focus:ring-deepPurple/40"
+                                                    :aria-invalid="
+                                                        Boolean(
+                                                            contactFormErrors
+                                                                .message
+                                                                ?.length,
+                                                        )
+                                                    "
                                                 />
+
+                                                <p
+                                                    v-if="
+                                                        contactFormErrors
+                                                            .message?.length
+                                                    "
+                                                    class="mt-2 font-sans text-[12px] text-red-700"
+                                                >
+                                                    {{
+                                                        contactFormErrors
+                                                            .message[0]
+                                                    }}
+                                                </p>
                                             </div>
 
                                             <div class="mt-6">
                                                 <button
                                                     type="submit"
                                                     class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] bg-mutedLilac px-10 py-3 font-sans text-[0.95rem] uppercase leading-none text-softLavender shadow-soft-lavender transition-all duration-500 ease-out hover:bg-deepPurple min-[641px]:w-auto"
+                                                    :disabled="
+                                                        isSubmittingContactForm
+                                                    "
                                                 >
-                                                    Send
+                                                    {{
+                                                        isSubmittingContactForm
+                                                            ? "Sending..."
+                                                            : "Send"
+                                                    }}
                                                 </button>
 
                                                 <div
