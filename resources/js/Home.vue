@@ -28,12 +28,12 @@ const navItems = computed(() => [
     { anchor: "contact", label: "Contact" },
 ]);
 
-const DEFAULT_HOME_BG_URL = "/images/home_bg.jpg";
-const ABOUT_BG_URL = "/images/about_bg.jpg";
-const SERVICES_BG_URL = "/images/services_bg.jpg";
-const CONTACT_BG_URL = "/images/contact_bg.jpg";
-const ABOUT_IMG_URL = "/images/about_img.jpeg";
-const CONTACT_IMG_URL = "/images/contact-img.jpeg";
+const DEFAULT_HOME_BG_URL = "/images/home_bg.webp";
+const ABOUT_BG_URL = "/images/about_bg.webp";
+const SERVICES_BG_URL = "/images/services_bg.webp";
+const CONTACT_BG_URL = "/images/contact_bg.webp";
+const ABOUT_IMG_URL = "/images/about_img.webp";
+const CONTACT_IMG_URL = "/images/contact-img.webp";
 
 const setlistTitleOverrides = {
     picknmix: "Pick 'n' Mix",
@@ -41,13 +41,13 @@ const setlistTitleOverrides = {
 };
 
 const setlistFileNames = [
-    "40s to Noughties Poster.png",
-    "80splayist.jpeg",
-    "90s Nostalgia.png",
-    "Heart Songs.png",
-    "Noughties Nostalgia poster.png",
-    "Rock rebels.png.jpeg",
-    "picknmix.png",
+    "40s to Noughties Poster.webp",
+    "80splayist.webp",
+    "90s Nostalgia.webp",
+    "Heart Songs.webp",
+    "Noughties Nostalgia poster.webp",
+    "Rock rebels.webp",
+    "picknmix.webp",
 ];
 
 function stripKnownExtensions(value) {
@@ -182,11 +182,11 @@ watch(
     { immediate: true },
 );
 
-const HERO_LOGO_URL = "/images/logo.png";
+const HERO_LOGO_URL = "/images/logo.webp";
 const HERO_VIDEO_URL = "/videos/promo_video.mp4";
 const HERO_EXTERNAL_URL =
     "https://www.northeastweddingnetwork.co.uk/ana-fae-music";
-const HERO_EXTERNAL_ICON_URL = "/images/wedding_network.png";
+const HERO_EXTERNAL_ICON_URL = "/images/wedding_network.webp";
 
 const servicesTabs = [
     {
@@ -201,8 +201,8 @@ const servicesTabs = [
                 body: "A beautifully personal soundtrack for your ceremony. Choose any song for your walk down the aisle, followed by up to three carefully selected songs while you and your guests enjoy the signing of the register. Perfect for couples seeking an intimate and elegant musical moment.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/forget-me-not-package.jpeg",
-                belowButtonImageUrl: "/images/forget-me-not.png",
+                imageUrl: "/images/forget-me-not-package.webp",
+                belowButtonImageUrl: "/images/forget-me-not.webp",
             },
             {
                 id: "daisy",
@@ -212,8 +212,8 @@ const servicesTabs = [
                 body: "An hour of live music to accompany your drinks reception or wedding breakfast.\nIncludes up to five bespoke song requests, tailored especially to you and your day.\nLight, uplifting, and effortlessly refined.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/daisy-package.jpeg",
-                belowButtonImageUrl: "/images/daisy.png",
+                imageUrl: "/images/daisy-package.webp",
+                belowButtonImageUrl: "/images/daisy.webp",
             },
             {
                 id: "foxglove",
@@ -223,8 +223,8 @@ const servicesTabs = [
                 body: "A seamless musical journey through your day.\nUp to one hour of live music during your drinks reception, followed by up to one hour during your wedding breakfast — with the option to conclude with your chosen first dance song.\nIdeal for couples who want music woven naturally into their celebration.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/foxglove-package.jpeg",
-                belowButtonImageUrl: "/images/foxglove.png",
+                imageUrl: "/images/foxglove-package.webp",
+                belowButtonImageUrl: "/images/foxglove.webp",
             },
             {
                 id: "evening-primrose",
@@ -234,8 +234,8 @@ const servicesTabs = [
                 body: "Two 45-minute live sets designed to bring the evening to life.\nSelect from any of my curated set lists, with up to five personalised song requests.\nYour own chosen playlist will play between sets to keep the atmosphere flowing.\nA first dance song may be added as an optional extra.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/epp-package.jpeg",
-                belowButtonImageUrl: "/images/primrose.png",
+                imageUrl: "/images/epp-package.webp",
+                belowButtonImageUrl: "/images/primrose.webp",
             },
             {
                 id: "the-full-bouquet",
@@ -245,8 +245,8 @@ const servicesTabs = [
                 body: "The complete musical experience for your wedding day.\nA chosen song for your walk down the aisle, plus up to three songs during the signing of the register\nUp to one hour of live music during your drinks reception\nUp to one hour during your wedding breakfast, optionally ending with your first dance\nTwo 45-minute evening sets to get the party started\nUp to five bespoke song requests\nA personalised playlist to play between live sets\nOptional bespoke evening playlist to keep the celebration going late into the night\nThoughtfully curated, entirely personal, and effortlessly elegant.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/tfb-package.png",
-                belowButtonImageUrl: "/images/bouquet.png",
+                imageUrl: "/images/tfb-package.webp",
+                belowButtonImageUrl: "/images/bouquet.webp",
             },
         ],
     },
@@ -262,7 +262,7 @@ const servicesTabs = [
                 body: "For something truly extraordinary, share your story and four of your most treasured songs, and allow me to compose a short, original piece inspired entirely by you.\n\nExpertly written and thoughtfully arranged, your bespoke song will reflect the essence of your journey together — intimate, meaningful, and unmistakably yours.\n\nPerfect as a first dance or a graceful accompaniment to your walk down the aisle.\n\nYou will receive a professionally recorded digital copy to cherish forever, with the option to have the piece performed live on your wedding day.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/wedding-song-writing.jpg",
+                imageUrl: "/images/wedding-song-writing.webp",
                 belowButtonImageUrl: null,
             },
         ],
@@ -279,7 +279,7 @@ const servicesTabs = [
                 body: "Details coming soon.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/private-parties.png",
+                imageUrl: "/images/private-parties.webp",
                 belowButtonImageUrl: null,
             },
         ],
@@ -296,7 +296,7 @@ const servicesTabs = [
                 body: "Every unforgettable evening has a signature sound.\n\nWorking with your chosen songs and inspirations, I craft a tailored musical backdrop designed to shape the atmosphere from the very first note. The energy evolves naturally throughout the night, guided with care to ensure the room always feels exactly as it should.\n\nRequests are embraced, transitions are intentional, and the flow remains uninterrupted — allowing you to host with confidence while the music quietly works its magic.",
                 buttonLabel: "Book Now",
                 buttonAnchor: "contact",
-                imageUrl: "/images/playlist-curration.jpeg",
+                imageUrl: "/images/playlist-curration.webp",
                 belowButtonImageUrl: null,
             },
         ],
@@ -2060,7 +2060,7 @@ onBeforeUnmount(() => {
                                                             class="inline-flex h-[150px] w-[150px] items-center justify-center"
                                                         >
                                                             <img
-                                                                src="https://www.lastminutemusicians.com/images/v5/LMM-White.png"
+                                                                src="https://www.lastminutemusicians.com/images/v5/LMM-White.webp"
                                                                 alt="Ana Fae on Last Minute Musicians"
                                                                 class="h-[150px] w-[150px] object-contain"
                                                             />
