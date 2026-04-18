@@ -48,9 +48,9 @@ Route::get('/sitemap.xml', function () {
 
     return response(
         '<?xml version="1.0" encoding="UTF-8"?>'
-        . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-        . $xml
-        . '</urlset>',
+            . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            . $xml
+            . '</urlset>',
         200,
         ['Content-Type' => 'application/xml; charset=UTF-8'],
     );
