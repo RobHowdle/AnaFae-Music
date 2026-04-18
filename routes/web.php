@@ -3,11 +3,62 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PageSectionController as AdminPageSectionController;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/robots.txt', function () {
+    $content = implode("\n", [
+        'User-agent: *',
+        'Allow: /',
+        'Sitemap: ' . url('/sitemap.xml'),
+        '',
+    ]);
+
+    return response($content, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+});
+
+Route::get('/sitemap.xml', function () {
+    $urls = [
+        [
+            'loc' => route('home'),
+            'lastmod' => Carbon::now()->toDateString(),
+            'changefreq' => 'weekly',
+            'priority' => '1.0',
+        ],
+        [
+            'loc' => route('coming-soon'),
+            'lastmod' => Carbon::now()->toDateString(),
+            'changefreq' => 'monthly',
+            'priority' => '0.4',
+        ],
+    ];
+
+    $xml = collect($urls)
+        ->map(function (array $url) {
+            return implode('', [
+                '<url>',
+                '<loc>' . e($url['loc']) . '</loc>',
+                '<lastmod>' . e($url['lastmod']) . '</lastmod>',
+                '<changefreq>' . e($url['changefreq']) . '</changefreq>',
+                '<priority>' . e($url['priority']) . '</priority>',
+                '</url>',
+            ]);
+        })
+        ->implode('');
+
+    return response(
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        . $xml
+        . '</urlset>',
+        200,
+        ['Content-Type' => 'application/xml; charset=UTF-8'],
+    );
+});
 
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 Route::get('/comingsoon', function () {
     return view('coming-soon');

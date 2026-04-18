@@ -40,14 +40,15 @@ const setlistTitleOverrides = {
     "80splayist": "80s Playlist",
 };
 
-const setlistImageModules = import.meta.glob(
-    "../../public/images/setlists/*.{png,jpg,jpeg,webp,avif}",
-    {
-        eager: true,
-        import: "default",
-        query: "?url",
-    },
-);
+const setlistFileNames = [
+    "40s to Noughties Poster.png",
+    "80splayist.jpeg",
+    "90s Nostalgia.png",
+    "Heart Songs.png",
+    "Noughties Nostalgia poster.png",
+    "Rock rebels.png.jpeg",
+    "picknmix.png",
+];
 
 function stripKnownExtensions(value) {
     let normalized = String(value || "");
@@ -79,16 +80,14 @@ function slugifySetlistId(fileName) {
         .replace(/^-+|-+$/g, "");
 }
 
-const setlists = Object.entries(setlistImageModules)
-    .map(([filePath, imageUrl]) => {
-        const fileName = filePath.split("/").pop() || "";
+const setlists = setlistFileNames
+    .map((fileName) => {
         const baseName = stripKnownExtensions(fileName);
 
         return {
             id: slugifySetlistId(fileName) || baseName,
             title: formatSetlistTitle(fileName),
-            imageUrl:
-                typeof imageUrl === "string" ? imageUrl : String(imageUrl),
+            imageUrl: `/images/setlists/${encodeURIComponent(fileName)}`,
         };
     })
     .sort((a, b) =>
