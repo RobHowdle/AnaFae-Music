@@ -7,14 +7,53 @@ import {
     ref,
     watch,
 } from "vue";
+import { useHead } from "@vueuse/head";
 
 const rootEl = ref(null);
 const pageSlug = computed(() => rootEl.value?.dataset?.pageSlug || "home");
 
 const loading = ref(true);
 const loadError = ref(null);
+
 const page = ref(null);
 const sections = ref([]);
+
+// --- SEO: Set up meta tags dynamically ---
+useHead(
+    computed(() => {
+        // Fallbacks if API data not loaded yet
+        const title = page.value?.title || "Ana Fae Music";
+        const description =
+            sections.value?.[0]?.body?.replace(/<[^>]+>/g, "").slice(0, 160) ||
+            "Wedding singer and musician for North East England. Live music for weddings, parties, and events.";
+        return {
+            title,
+            meta: [
+                { name: "description", content: description },
+                { property: "og:title", content: title },
+                { property: "og:description", content: description },
+                { property: "og:type", content: "website" },
+                {
+                    property: "og:url",
+                    content:
+                        typeof window !== "undefined"
+                            ? window.location.href
+                            : "",
+                },
+                { property: "og:image", content: "/images/logo.webp" },
+            ],
+            link: [
+                {
+                    rel: "canonical",
+                    href:
+                        typeof window !== "undefined"
+                            ? window.location.href
+                            : "",
+                },
+            ],
+        };
+    }),
+);
 
 const activeAnchor = ref(null);
 const isMobileMenuOpen = ref(false);
