@@ -15,6 +15,36 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anafaemusic.co.uk/">
+    <meta property="og:title" content="Anafae Music">
+    <meta property="og:description" content="SINGER & COMPOSER
+
+WEDDINGS & FUNCTIONS 🪩
+
+AVAILABLE FOR BOOKING UK WIDE 🚗
+
+N/E ENGLAND BASED 📍
+
+Your story, your day; your songs, your way!">
+    <meta property="og:image" content="https://anafaemusic.co.uk/images/about_img.webp">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://anafaemusic.co.uk/">
+    <meta name="twitter:title" content="Anafae Music">
+    <meta name="twitter:description" content="SINGER & COMPOSER
+
+WEDDINGS & FUNCTIONS 🪩
+
+AVAILABLE FOR BOOKING UK WIDE 🚗
+
+N/E ENGLAND BASED 📍
+
+Your story, your day; your songs, your way!">
+    <meta name="twitter:image" content="https://anafaemusic.co.uk/images/about_img.webp">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
