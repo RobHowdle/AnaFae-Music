@@ -2099,7 +2099,7 @@ onBeforeUnmount(() => {
                                                             class="inline-flex h-[150px] w-[150px] items-center justify-center"
                                                         >
                                                             <img
-                                                                src="https://www.lastminutemusicians.com/images/v5/LMM-White.webp"
+                                                                src="https://www.lastminutemusicians.com/images/v5/LMM-White.png"
                                                                 alt="Ana Fae on Last Minute Musicians"
                                                                 class="h-[150px] w-[150px] object-contain"
                                                             />
