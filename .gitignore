@@ -18,6 +18,7 @@
 /public/storage
 /public/videos/*.mp4
 /public/videos/*.zip
+/public/videos/
 /storage/*.key
 /storage/pail
 /vendor

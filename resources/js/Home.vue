@@ -222,7 +222,6 @@ watch(
 );
 
 const HERO_LOGO_URL = "/images/logo.webp";
-const HERO_VIDEO_URL = "/videos/tional_video.mp4";
 const HERO_EXTERNAL_URL =
     "https://www.northeastweddingnetwork.co.uk/ana-fae-music";
 const HERO_EXTERNAL_ICON_URL = "/images/wedding_network.webp";
@@ -1046,12 +1045,22 @@ onBeforeUnmount(() => {
                         <div
                             class="aspect-video w-full overflow-hidden rounded-[12px] bg-black"
                         >
-                            <video
+                            <iframe
                                 class="h-full w-full"
-                                :src="HERO_VIDEO_URL"
-                                controls
-                                autoplay
-                            />
+                                src="https://www.youtube.com/embed/TvdBKDPKyi8?autoplay=1&rel=0"
+                                title="YouTube video player"
+                                frameborder="0"
+                                allow="
+                                    accelerometer;
+                                    autoplay;
+                                    clipboard-write;
+                                    encrypted-media;
+                                    gyroscope;
+                                    picture-in-picture;
+                                    web-share;
+                                "
+                                allowfullscreen
+                            ></iframe>
                         </div>
                     </div>
                 </div>
