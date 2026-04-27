@@ -222,7 +222,7 @@ watch(
 );
 
 const HERO_LOGO_URL = "/images/logo.webp";
-const HERO_VIDEO_URL = "/videos/promo_video.mp4";
+const HERO_VIDEO_URL = "/videos/tional_video.mp4";
 const HERO_EXTERNAL_URL =
     "https://www.northeastweddingnetwork.co.uk/ana-fae-music";
 const HERO_EXTERNAL_ICON_URL = "/images/wedding_network.webp";
